@@ -117,7 +117,7 @@ public class IndexServiceBean {
     
     @PostConstruct
     public void init(){
-        String urlString = "http://" + systemConfig.getSolrHostColonPort() + "/solr/collection1";
+        String urlString = "http://" + systemConfig.getSolrHostColonPort() + "/solr/core1";
         solrServer = new HttpSolrClient.Builder(urlString).build();
 
         rootDataverseName = findRootDataverseCached().getName();
