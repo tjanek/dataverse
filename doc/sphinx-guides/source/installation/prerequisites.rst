@@ -193,12 +193,12 @@ Become the ``solr`` user and then download and configure Solr::
         wget https://archive.apache.org/dist/lucene/solr/7.3.0/solr-7.3.0.tgz
         tar xvzf solr-7.3.0.tgz
         cd solr-7.3.0
-        cp -r server/solr/configsets/_default server/solr/core1
+        cp -r server/solr/configsets/_default server/solr/configsets/_default_dv
 
 You should already have a "dvinstall.zip" file that you downloaded from https://github.com/IQSS/dataverse/releases . Unzip it into ``/tmp``. Then copy the files into place::
 
-        cp /tmp/dvinstall/schema.xml /usr/local/solr/solr-7.3.0/server/solr/core1/conf
-        cp /tmp/dvinstall/solrconfig.xml /usr/local/solr/solr-7.3.0/server/solr/core1/conf
+        cp /tmp/dvinstall/schema.xml /usr/local/solr/solr-7.3.0/server/solr/configsets/_default_dv
+        cp /tmp/dvinstall/solrconfig.xml /usr/local/solr/solr-7.3.0/server/solr/configsets/_default_dv
 
 Note: Dataverse has customized Solr to boost results that come from certain indexed elements inside Dataverse, for example results matching on the name of a dataset. If you would like to remove this, edit your ``solrconfig.xml`` and remove the ``<str name="qf">`` element and its contents.
 
@@ -208,7 +208,7 @@ With the Dataverse-specific config in place, you can now start Solr and create t
 
         cd /usr/local/solr/solr-7.3.0
         bin/solr start
-        bin/solr create_core -c core1 -d server/solr/core1/conf/
+        bin/solr create_core -c core1 -d _default_dv
 	
 Please note: Solr will warn about needing to increase the number of file descriptors and max processes in a production environment but will still run with defaults. We have increased these values to the recommended levels by adding ulimit -n 65000 to the init script and adding solr soft nproc 65000 to /etc/security/limits.conf. On operating systems which use systemd such as RHEL or CentOS 7, you may add a line like LimitNOFILE=65000 to the systemd unit file, or adjust the limits on a running process using the prlimit tool:
 

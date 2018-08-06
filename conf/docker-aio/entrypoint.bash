@@ -5,7 +5,7 @@ sudo -u postgres /usr/pgsql-9.6/bin/postgres -D /var/lib/pgsql/data &
 cd /opt/solr-7.3.0/
 # TODO: Run Solr as non-root and remove "-force".
 bin/solr start -force
-bin/solr create_core -c core1 -d server/solr/core1/conf -force
+bin/solr create_core -c core1 -d _default_dv -force
 
 # start apache, in both foreground and background...
 apachectl -DFOREGROUND &

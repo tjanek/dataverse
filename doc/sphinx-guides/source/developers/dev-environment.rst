@@ -123,21 +123,21 @@ To install Solr, execute the following commands:
 
 ``cd solr-7.3.0/server/solr``
 
-``cp -r configsets/_default core1``
+``cp -r configsets/_default configsets/_default_dv``
 
 ``curl -O https://raw.githubusercontent.com/IQSS/dataverse/develop/conf/solr/7.3.0/schema.xml``
 
-``mv schema.xml core1/conf``
+``mv schema.xml configsets/_default_dv``
 
 ``curl -O https://raw.githubusercontent.com/IQSS/dataverse/develop/conf/solr/7.3.0/solrconfig.xml``
 
-``mv solrconfig.xml core1/conf/solrconfig.xml``
+``mv solrconfig.xml configsets/_default_dv``
 
 ``cd /usr/local/solr/solr-7.3.0``
 
 ``bin/solr start``
 
-``bin/solr create_core -c core1 -d server/solr/core1/conf``
+``bin/solr create_core -c core1 -d _default_dv``
 
 Run the Dataverse Installer Script
 ----------------------------------
