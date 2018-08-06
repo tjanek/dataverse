@@ -1128,9 +1128,6 @@
 
        See http://wiki.apache.org/solr/GuessingFieldTypes
     -->
-    
-    <schemaFactory class="ClassicIndexSchemaFactory"/>
-    
   <updateProcessor class="solr.UUIDUpdateProcessorFactory" name="uuid"/>
   <updateProcessor class="solr.RemoveBlankFieldUpdateProcessorFactory" name="remove-blank"/>
   <updateProcessor class="solr.FieldNameMutatingUpdateProcessorFactory" name="field-name-mutating">
