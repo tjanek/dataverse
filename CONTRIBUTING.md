@@ -15,7 +15,7 @@ There's a chance your idea is already on our roadmap, which is available at http
 [issue tracker]: https://github.com/IQSS/dataverse/issues
 [@dataverseorg]: https://twitter.com/dataverseorg
 
-## Usability testing ///
+## Usability testing /
 
 Please email us at support@dataverse.org if you are interested in participating in usability testing.
 
