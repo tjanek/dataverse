@@ -89,7 +89,9 @@ public class FileMetadata implements Serializable {
      */
     @Column(columnDefinition = "TEXT", nullable = true, name="prov_freeform")
     private String provFreeForm;
-        
+
+    private int displayOrder;
+
     /**
      * Creates a copy of {@code this}, with identical business logic fields.
      * E.g., {@link #label} would be duplicated; {@link #version} will not.
@@ -140,9 +142,15 @@ public class FileMetadata implements Serializable {
         this.restricted = restricted;
     }
 
+    public int getDisplayOrder() {
+        return displayOrder;
+    }
 
+    public void setDisplayOrder(int displayOrder) {
+        this.displayOrder = displayOrder;
+    }
 
-    /* 
+    /*
      * File Categories to which this version of the DataFile belongs: 
      */
     @ManyToMany
