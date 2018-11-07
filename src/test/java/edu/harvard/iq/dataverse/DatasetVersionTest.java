@@ -143,7 +143,7 @@ public class DatasetVersionTest {
     }
 
     @Test
-    public void shouldSortFileMetadataByDisplayOrderAndLabel() {
+    public void shouldSortFileMetadataByDisplayOrder() {
         // given
         DatasetVersion version = withUnSortedFiles();
 
