@@ -1,6 +1,16 @@
 package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.mocks.MocksFactory;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import java.io.StringReader;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -9,22 +19,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import org.junit.After;
-import org.junit.AfterClass;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static edu.harvard.iq.dataverse.mocks.MocksFactory.makeFileMetadata;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *
  * @author michael
+ * @author tjanek
  */
 public class DatasetVersionTest {
 
@@ -135,6 +140,42 @@ public class DatasetVersionTest {
         assertEquals(emptyArray, obj.getJsonArray("keywords"));
         assertEquals("Dataverse", obj.getJsonObject("provider").getString("name"));
         assertEquals("LibraScholar", obj.getJsonObject("includedInDataCatalog").getString("name"));
+    }
+
+    @Test
+    public void shouldSortFileMetadataByDisplayOrderAndLabel() {
+        // given
+        DatasetVersion version = withUnSortedFiles();
+
+        // when
+        List<FileMetadata> orderedMetadatas = version.getFileMetadatasSorted();
+
+        // then
+        verifySortOrder(orderedMetadatas, "file4.png", 0);
+        verifySortOrder(orderedMetadatas, "file3.png", 1);
+        verifySortOrder(orderedMetadatas, "file5.png", 2);
+        verifySortOrder(orderedMetadatas, "file2.png", 3);
+        verifySortOrder(orderedMetadatas, "file6.png", 4);
+        verifySortOrder(orderedMetadatas, "file1.png", 5);
+    }
+
+    private void verifySortOrder(List<FileMetadata> metadatas, String label, int expectedOrderIndex) {
+        assertEquals(label, metadatas.get(expectedOrderIndex).getLabel());
+    }
+
+    private DatasetVersion withUnSortedFiles() {
+        DatasetVersion datasetVersion = new DatasetVersion();
+
+        datasetVersion.setFileMetadatas(newArrayList(
+                makeFileMetadata("file2.png", 3),
+                makeFileMetadata("file1.png", 5),
+                makeFileMetadata("file3.png", 1),
+                makeFileMetadata("file4.png", 0),
+                makeFileMetadata("file5.png", 2),
+                makeFileMetadata("file6.png", 4)
+        ));
+
+        return datasetVersion;
     }
 
 }
