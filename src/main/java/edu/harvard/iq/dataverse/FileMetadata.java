@@ -5,8 +5,17 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
-import org.hibernate.validator.constraints.NotBlank;
-
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.persistence.Column;
@@ -23,20 +32,8 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.Version;
+import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.io.Serializable;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static java.util.Comparator.comparingInt;
 
 
 /**
@@ -515,8 +512,12 @@ public class FileMetadata implements Serializable {
         return "edu.harvard.iq.dvn.core.study.FileMetadata[id=" + id + "]";
     }
 
-    public static final Comparator<FileMetadata> compareByDisplayOrder =
-            (o1, o2) -> comparingInt(FileMetadata::getDisplayOrder).compare(o1, o2);
+    public static final Comparator<FileMetadata> compareByDisplayOrder = new Comparator<FileMetadata>() {
+        @Override
+        public int compare(FileMetadata o1, FileMetadata o2) {
+            return o1.getDisplayOrder() - o2.getDisplayOrder();
+        }
+    };
 
     public String toPrettyJSON(){
         

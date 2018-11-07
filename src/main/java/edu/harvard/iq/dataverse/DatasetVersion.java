@@ -50,6 +50,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 /**
  *
  * @author skraffmiller
@@ -194,8 +196,9 @@ public class DatasetVersion implements Serializable {
     }
     
     public List<FileMetadata> getFileMetadatasSorted() {
-        Collections.sort(fileMetadatas, FileMetadata.compareByDisplayOrder);
-        return fileMetadatas;
+        List<FileMetadata> result = newArrayList(fileMetadatas);
+        Collections.sort(result, FileMetadata.compareByDisplayOrder);
+        return result;
     }
 
     public void setFileMetadatas(List<FileMetadata> fileMetadatas) {
