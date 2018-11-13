@@ -855,7 +855,7 @@ public class FileUtil implements java.io.Serializable  {
                     if (version.getFileMetadatas() == null) {
                         version.setFileMetadatas(new ArrayList());
                     }
-                    version.getFileMetadatas().add(datafile.getFileMetadata());
+                    version.addFileMetadata(datafile.getFileMetadata());
                     datafile.getFileMetadata().setDatasetVersion(version);
                     
                     version.getDataset().getFiles().add(datafile);
@@ -1016,7 +1016,7 @@ public class FileUtil implements java.io.Serializable  {
             if (version.getFileMetadatas() == null) {
                 version.setFileMetadatas(new ArrayList<>());
             }
-            version.getFileMetadatas().add(fmd);
+            version.addFileMetadata(fmd);
             fmd.setDatasetVersion(version);
             version.getDataset().getFiles().add(datafile);
         }

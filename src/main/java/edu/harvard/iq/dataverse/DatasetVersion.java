@@ -1800,6 +1800,21 @@ public class DatasetVersion implements Serializable {
         return jsonLd;
     }
 
+    public void addFileMetadata(FileMetadata fileMetadata) {
+        fileMetadata.setDisplayOrder(fileMetadataNextOrder());
+        getFileMetadatas().add(fileMetadata);
+    }
+
+    private int fileMetadataNextOrder() {
+        int maxDisplayOrder = 0;
+        for (FileMetadata metadata : getFileMetadatas()) {
+            if (metadata.getDisplayOrder() > maxDisplayOrder) {
+                maxDisplayOrder = metadata.getDisplayOrder();
+            }
+        }
+        return ++maxDisplayOrder;
+    }
+
     public void removeFileMetadata(FileMetadata fileMetadata) {
         getFileMetadatas().remove(fileMetadata);
         for (FileMetadata metadata : findFilesToReorderAfter(fileMetadata)) {

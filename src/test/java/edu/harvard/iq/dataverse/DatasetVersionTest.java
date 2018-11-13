@@ -248,6 +248,22 @@ public class DatasetVersionTest {
         versionHasNotFileMetadata(version.getFileMetadatas(), toRemove);
     }
 
+    @Test
+    public void shouldAddNewFileMetadataWithProperDisplayOrder() {
+        // given
+        DatasetVersion version = withFilesAndCustomDisplayOrder();
+        FileMetadata toAdd = makeFileMetadata(40L, "file4.png", 0);
+
+        // when
+        version.addFileMetadata(toAdd);
+
+        // then
+        verifyDisplayOrder(version.getFileMetadatas(), 0, "file1.png", 1);
+        verifyDisplayOrder(version.getFileMetadatas(), 1, "file2.png", 6);
+        verifyDisplayOrder(version.getFileMetadatas(), 2, "file3.png", 8);
+        verifyDisplayOrder(version.getFileMetadatas(), 3, "file4.png", 9);
+    }
+
     private void versionHasNotFileMetadata(List<FileMetadata> metadatas, FileMetadata toRemove) {
         assertFalse(metadatas.stream().anyMatch(fm ->
                 fm.getDisplayOrder() == toRemove.getDisplayOrder() &&
@@ -286,6 +302,18 @@ public class DatasetVersionTest {
                 makeFileMetadata(20L,"file2.png", 2),
                 makeFileMetadata(30L,"file3.png", 3),
                 makeFileMetadata(40L,"file4.png", 4)
+        ));
+
+        return datasetVersion;
+    }
+
+    private DatasetVersion withFilesAndCustomDisplayOrder() {
+        DatasetVersion datasetVersion = new DatasetVersion();
+
+        datasetVersion.setFileMetadatas(newArrayList(
+                makeFileMetadata(10L,"file1.png", 1),
+                makeFileMetadata(20L,"file2.png", 6),
+                makeFileMetadata(30L,"file3.png", 8)
         ));
 
         return datasetVersion;
