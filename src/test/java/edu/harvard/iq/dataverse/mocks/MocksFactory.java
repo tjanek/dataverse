@@ -235,8 +235,9 @@ public class MocksFactory {
         return eg;
     }
 
-    public static FileMetadata makeFileMetadata( String label, int displayOrder) {
+    public static FileMetadata makeFileMetadata( Long id, String label, int displayOrder) {
         FileMetadata fileMetadata = new FileMetadata();
+        fileMetadata.setId(id);
 
         fileMetadata.setLabel(label);
         fileMetadata.setDisplayOrder(displayOrder);

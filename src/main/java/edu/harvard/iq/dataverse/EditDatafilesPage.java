@@ -1293,7 +1293,7 @@ public class EditDatafilesPage implements java.io.Serializable {
                     try {
                         commandEngine.submit(new DeleteDataFileCommand(fmd.getDataFile(), dvRequestService.getDataverseRequest()));
                         dataset.getFiles().remove(fmd.getDataFile());
-                        workingVersion.getFileMetadatas().remove(fmd);
+                        workingVersion.removeFileMetadata(fmd);
                         // added this check to handle issue where you could not deleter a file that shared a category with a new file
                         // the relationship does not seem to cascade, yet somehow it was trying to merge the filemetadata
                         // todo: clean this up some when we clean the create / update dataset methods
@@ -1308,7 +1308,7 @@ public class EditDatafilesPage implements java.io.Serializable {
                 } else {
                     datafileService.removeFileMetadata(fmd);
                     fmd.getDataFile().getFileMetadatas().remove(fmd);
-                    workingVersion.getFileMetadatas().remove(fmd);
+                    workingVersion.removeFileMetadata(fmd);
                 }
             }
             

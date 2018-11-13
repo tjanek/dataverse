@@ -1,6 +1,7 @@
 package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.mocks.MocksFactory;
+import edu.harvard.iq.dataverse.util.json.JsonUtil;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -11,7 +12,6 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import edu.harvard.iq.dataverse.util.json.JsonUtil;
 import java.io.StringReader;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -230,23 +230,64 @@ public class DatasetVersionTest {
         verifySortOrder(orderedMetadatas, "file1.png", 5);
     }
 
+    @Test
+    public void shouldDecreaseDisplayOrderOfOtherFileMetadatas() {
+        // given
+        DatasetVersion version = withSortedFiles();
+        FileMetadata toRemove = version.getFileMetadatas().get(1);
+
+        // when
+        version.removeFileMetadata(toRemove);
+
+        // then
+        verifyDisplayOrder(version.getFileMetadatas(), 0, "file1.png", 1);
+        verifyDisplayOrder(version.getFileMetadatas(), 1, "file3.png", 2);
+        verifyDisplayOrder(version.getFileMetadatas(), 2, "file4.png", 3);
+
+        // and
+        versionHasNotFileMetadata(version.getFileMetadatas(), toRemove);
+    }
+
+    private void versionHasNotFileMetadata(List<FileMetadata> metadatas, FileMetadata toRemove) {
+        assertFalse(metadatas.stream().anyMatch(fm ->
+                fm.getDisplayOrder() == toRemove.getDisplayOrder() &&
+                fm.getLabel().equals(toRemove.getLabel())));
+    }
+
     private void verifySortOrder(List<FileMetadata> metadatas, String label, int expectedOrderIndex) {
         assertEquals(label, metadatas.get(expectedOrderIndex).getLabel());
+    }
+
+    private void verifyDisplayOrder(List<FileMetadata> metadatas, int index, String label, int displayOrder) {
+        assertEquals(label, metadatas.get(index).getLabel());
+        assertEquals(displayOrder, metadatas.get(index).getDisplayOrder());
     }
 
     private DatasetVersion withUnSortedFiles() {
         DatasetVersion datasetVersion = new DatasetVersion();
 
         datasetVersion.setFileMetadatas(newArrayList(
-                makeFileMetadata("file2.png", 3),
-                makeFileMetadata("file1.png", 5),
-                makeFileMetadata("file3.png", 1),
-                makeFileMetadata("file4.png", 0),
-                makeFileMetadata("file5.png", 2),
-                makeFileMetadata("file6.png", 4)
+                makeFileMetadata(10L, "file2.png", 3),
+                makeFileMetadata(20L, "file1.png", 5),
+                makeFileMetadata(30L,"file3.png", 1),
+                makeFileMetadata(40L,"file4.png", 0),
+                makeFileMetadata(50L,"file5.png", 2),
+                makeFileMetadata(60L,"file6.png", 4)
         ));
 
         return datasetVersion;
     }
 
+    private DatasetVersion withSortedFiles() {
+        DatasetVersion datasetVersion = new DatasetVersion();
+
+        datasetVersion.setFileMetadatas(newArrayList(
+                makeFileMetadata(10L,"file1.png", 1),
+                makeFileMetadata(20L,"file2.png", 2),
+                makeFileMetadata(30L,"file3.png", 3),
+                makeFileMetadata(40L,"file4.png", 4)
+        ));
+
+        return datasetVersion;
+    }
 }

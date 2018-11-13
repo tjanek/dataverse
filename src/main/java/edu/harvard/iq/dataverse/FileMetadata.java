@@ -570,5 +570,9 @@ public class FileMetadata implements Serializable {
     public void setProvFreeForm(String provFreeForm) {
         this.provFreeForm = provFreeForm;
     }
+
+    public void decreaseDisplayOrder() {
+        this.displayOrder--;
+    }
     
 }
