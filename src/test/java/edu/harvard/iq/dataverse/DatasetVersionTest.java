@@ -231,7 +231,7 @@ public class DatasetVersionTest {
     }
 
     @Test
-    public void shouldDecreaseDisplayOrderOfOtherFileMetadatas() {
+    public void shouldDecreaseDisplayOrderOfOtherFileMetadatasWhenRemoveSingleFile() {
         // given
         DatasetVersion version = withSortedFiles();
         FileMetadata toRemove = version.getFileMetadatas().get(1);
@@ -246,6 +246,57 @@ public class DatasetVersionTest {
 
         // and
         versionHasNotFileMetadata(version.getFileMetadatas(), toRemove);
+    }
+
+    @Test
+    public void shouldDecreaseDisplayOrderOfOtherFileMetadatasWhenRemoveManyFilesFromMiddle() {
+        // given
+        DatasetVersion version = withSortedFiles();
+
+        // when
+        version.removeFileMetadata(version.getFileMetadatas().get(1));
+        version.removeFileMetadata(version.getFileMetadatas().get(1));
+
+        // then
+        verifyDisplayOrder(version.getFileMetadatas(), 0, "file1.png", 1);
+        verifyDisplayOrder(version.getFileMetadatas(), 1, "file4.png", 2);
+
+        // and
+        assertEquals(2, version.getFileMetadatas().size());
+    }
+
+    @Test
+    public void shouldDecreaseDisplayOrderOfOtherFileMetadatasWhenRemoveManyFilesFromBeginning() {
+        // given
+        DatasetVersion version = withSortedFiles();
+
+        // when
+        version.removeFileMetadata(version.getFileMetadatas().get(0));
+        version.removeFileMetadata(version.getFileMetadatas().get(0));
+
+        // then
+        verifyDisplayOrder(version.getFileMetadatas(), 0, "file3.png", 1);
+        verifyDisplayOrder(version.getFileMetadatas(), 1, "file4.png", 2);
+
+        // and
+        assertEquals(2, version.getFileMetadatas().size());
+    }
+
+    @Test
+    public void shouldNotDecreaseDisplayOrderOfAnyOtherFileMetadatasWhenRemoveLast() {
+        // given
+        DatasetVersion version = withSortedFiles();
+
+        // when
+        version.removeFileMetadata(version.getFileMetadatas().get(3));
+
+        // then
+        verifyDisplayOrder(version.getFileMetadatas(), 0, "file1.png", 1);
+        verifyDisplayOrder(version.getFileMetadatas(), 1, "file2.png", 2);
+        verifyDisplayOrder(version.getFileMetadatas(), 2, "file3.png", 3);
+
+        // and
+        assertEquals(3, version.getFileMetadatas().size());
     }
 
     @Test
