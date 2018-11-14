@@ -30,7 +30,7 @@
                              selection="#{ReorderDataFilesPage.fileMetadatas}" var="fileMetadata" widgetVar="filesTable"
                              draggableRows="true"
                              emptyMessage="#{bundle['file.notFound.tip']}">
-                    <p:ajax event="rowReorder" listener="#{ReorderDataFilesPage.onRowReorder}" update="form"/>
+                    <p:ajax event="rowReorder" listener="#{ReorderDataFilesPage.onRowReorder}"/>
                     <f:facet name="header">
                         <div class="row" style="margin-bottom:6px;">
                             <div jsf:id="filesHeaderCount" class="col-xs-3 text-left">
@@ -53,7 +53,7 @@
                     </p:column>
                     <p:column class="col-file-metadata">
 
-                        <ui:fragment rendered="#{!empty fileMetadata.dataFile.globalIdString}">
+                        <ui:fragment rendered="#{!empty fileMetadata.dataFile.globalIdString}">mySet
                             <!-- rendered="# {!(fileMetadata.datasetVersion.released or fileMetadata.datasetVersion.deaccessioned)}" -->
                             <a href="#{widgetWrapper.wrapURL('/file.xhtml?persistentId='.concat(fileMetadata.dataFile.globalIdString).concat('&amp;version=').concat(fileMetadata.datasetVersion.friendlyVersionNumber))}">
                                 #{fileMetadata.label}
@@ -65,7 +65,7 @@
                             </a>
                         </ui:fragment>
 
-                        <!-- TYPE + SIZE + DATE + CHECKSUM -->
+                        <!-- TYPE + SIZE + DATE -->
                         <div class="text-muted small">
                             <!-- id:#{fileMetadata.dataFile.id} -->
                             <h:outputText id="fileTypeOutputRegular" value="#{fileMetadata.dataFile.friendlyType}"
@@ -76,12 +76,6 @@
 
                             <h:outputText id="fileCreatePublishDate" value=" - #{fileMetadata.getFileDateToDisplay()}"
                                           rendered="#{!(empty fileMetadata.id)}"/>
-
-                            <div class="checksum-block" jsf:rendered="#{!fileMetadata.dataFile.tabularData}">
-                                <h:outputText id="file-checksum"
-                                              value="#{fileMetadata.dataFile.checksumType}: #{fileMetadata.dataFile.checksumValue}"
-                                              rendered="#{!(empty fileMetadata.dataFile.checksumValue)}"/>
-                            </div>
                         </div>
                         <!-- UNF + Variables, Obsersvations -->
                         <div class="text-muted small" jsf:rendered="#{fileMetadata.dataFile.tabularData}">
@@ -96,8 +90,13 @@
                         </div>
 
                         <div class="fileDescription small" jsf:rendered="#{!(empty fileMetadata.description)}">
-                            <h:outputText id="fileDescNonEmpty" value="#{fileMetadata.description}"
-                                          rendered="#{!(empty fileMetadata.description)}"/>
+                            <h:button id="detailstoggle" onclick="return hideOrShowDetails(this.id)"
+                                      style="width:60px; height: 20px;"/>
+                            <h:outputText id="file-checksum" style="display: none; padding-bottom: 3px"
+                                          value="#{fileMetadata.dataFile.checksumType}: #{fileMetadata.dataFile.checksumValue}"
+                                          rendered="#{!(empty fileMetadata.dataFile.checksumValue)}"/>
+                            <h:outputText style="display: none" id="fileDescNonEmpty"
+                                          value="#{fileMetadata.description}"/>
                         </div>
 
                         <div class="file-tags-block margin-top-half"
@@ -151,7 +150,45 @@
                         </p:outputPanel>
                     </div>
                 </p:fragment>
+                <!-- Request Access Sign Up/Log In Button -->
+                <p:dialog header="#{bundle['file.requestAccess']}" widgetVar="accessSignUpLogIn_popup" modal="true">
+                    <p class="help-block">
+                        <span class="glyphicon glyphicon-warning-sign text-danger"/>&#160;
+                        <h:outputFormat styleClass="text-danger"
+                                        value="#{dataverseHeaderFragment.signupAllowed ? bundle['file.requestAccess.dialog.msg.signup'] : bundle['file.requestAccess.dialog.msg']}"
+                                        escape="false">
+                            <f:param value="#{navigationWrapper.redirectPage}"/>
+                            <f:param value="#{dataverseHeaderFragment.getSignupUrl(navigationWrapper.redirectPage)}"/>
+                            <f:param value="#{widgetWrapper.widgetView ? '_blank' : '_self'}"/>
+                        </h:outputFormat>
+                    </p>
+                    <div class="button-block">
+                        <p:commandButton value="#{bundle.close}" onclick="PF('accessSignUpLogIn_popup').hide();
+                                    PF('blockDatasetForm').hide();"/>
+                    </div>
+                </p:dialog>
+                <!-- END: Request Access Sign Up/Log In Button -->
             </h:form>
+            <script type="text/javascript">
+                function hideOrShowDetails(id) {
+                    let textPosition = id.match("\\d")[0];
+
+                    var hiddenElements = new Set();
+                    hiddenElements.add("file-checksum");
+                    hiddenElements.add("fileDescNonEmpty");
+
+                    for (let item of hiddenElements) {
+
+                        var obj = document.getElementById("form:filesTable:" + textPosition + ":" + item);
+                        if (obj.style.display === "none") {
+                            obj.style.display = "block";
+                        } else {
+                            obj.style.display = "none";
+                        }
+                    }
+                    return false;
+                }
+            </script>
         </ui:define>
     </ui:composition>
 </h:body>

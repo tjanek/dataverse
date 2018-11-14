@@ -2,9 +2,11 @@ package edu.harvard.iq.dataverse.datafile.page;
 
 import edu.harvard.iq.dataverse.Dataset;
 import edu.harvard.iq.dataverse.DatasetServiceBean;
-import edu.harvard.iq.dataverse.DatasetVersion;
+import edu.harvard.iq.dataverse.DatasetVersionServiceBean;
 import edu.harvard.iq.dataverse.FileMetadata;
+import edu.harvard.iq.dataverse.PermissionServiceBean;
 import edu.harvard.iq.dataverse.PermissionsWrapper;
+import edu.harvard.iq.dataverse.authorization.Permission;
 import org.primefaces.event.ReorderEvent;
 
 import javax.ejb.EJB;
@@ -24,12 +26,17 @@ public class ReorderDataFilesPage implements java.io.Serializable {
 
     @EJB
     private DatasetServiceBean datasetService;
+    @EJB
+    private DatasetVersionServiceBean datasetVersionService;
+    @EJB
+    private PermissionServiceBean permissionService;
     @Inject
-    PermissionsWrapper permissionsWrapper;
+    private PermissionsWrapper permissionsWrapper;
 
     private Dataset dataset = new Dataset();
     private List<FileMetadata> fileMetadatas;
-    private List<Integer> orderedFilesIndex = new ArrayList<>();
+    private List<FileMetadata> fileMetadatasCopy;
+    private List<FileMetadataEvent> orderedFilesIndex = new ArrayList<>();
 
     /**
      * Initializes all properties requested by frontend.
@@ -38,7 +45,6 @@ public class ReorderDataFilesPage implements java.io.Serializable {
      * @return error if something goes wrong or null if success.
      */
     public String init() {
-        fileMetadatas = new ArrayList<>();
 
         Optional<Dataset> fetchedDataset = fetchDataset(dataset.getId());
 
@@ -46,27 +52,38 @@ public class ReorderDataFilesPage implements java.io.Serializable {
             return permissionsWrapper.notFound();
         }
 
-        DatasetVersion datasetVersion = fetchedDataset.get().getLatestVersion();
-        fileMetadatas = datasetVersion.getFileMetadatasSorted();
+        fileMetadatas = fetchedDataset.get().getLatestVersion().getFileMetadatasSorted();
+
+        // for some reason the original fileMetadatas is causing null if used anywhere else. For
+        fileMetadatasCopy = fileMetadatas;
+
+        if (!permissionService.on(dataset).has(Permission.EditDataset)) {
+            return permissionsWrapper.notAuthorized();
+        }
 
         return null;
     }
 
+    /**
+     * Reorders files display order if any were reordered, saves the changes to the database
+     * and returns to the previous page.
+     *
+     * @return uri to previous page
+     */
     public String saveFileOrder() {
-        fileMetadatas = dataset.getLatestVersion().getFileMetadatasSorted();
 
-        orderedFilesIndex
-                .forEach(orderedFileMeta -> fileMetadatas.stream()
-                        .filter(fileMetadata -> fileMetadata.getDisplayOrder() >= orderedFileMeta)
-                        .forEach(fileMetadata -> fileMetadata.setDisplayOrder(fileMetadata.getDisplayOrder() + 1)));
+        orderedFilesIndex.forEach(orderedFileMeta -> reorderFilesDisplayOrder(orderedFileMeta, fileMetadatasCopy));
 
-        return "/dataset.xhtml?persistentId=" + dataset.getGlobalId().asString() + "&version=DRAFT&faces-redirect=true";
+        datasetVersionService.saveFileMetadata(fileMetadatasCopy);
+
+        return returnToPreviousPage();
     }
 
-    public String returnToPreviousPage() {
-        return "/dataset.xhtml?persistentId=" + dataset.getGlobalId().asString() + "&version=DRAFT&faces-redirect=true";
-    }
-
+    /**
+     * Adds the reorder action to the list.
+     *
+     * @param event
+     */
     public void onRowReorder(ReorderEvent event) {
         int movedToIndex = event.getToIndex();
 
@@ -75,10 +92,10 @@ public class ReorderDataFilesPage implements java.io.Serializable {
 
         // already moved in fileMetadataSearch before event wad fired
         // some get event.getToIndex instead of event.getFromIndex
+        FileMetadata fileMetadata = fileMetadatasCopy.get(event.getToIndex());
+        fileMetadata.setDisplayOrder(movedToIndex);
 
-        orderedFilesIndex.add(movedToIndex);
-
-        //fileMetadataOrderService.reorderExisting(orderedFiles);
+        orderedFilesIndex.add(new FileMetadataEvent(event, fileMetadata));
     }
 
     /**
@@ -90,6 +107,53 @@ public class ReorderDataFilesPage implements java.io.Serializable {
     private Optional<Dataset> fetchDataset(Long id) {
         return Optional.ofNullable(id)
                 .map(datasetId -> this.dataset = datasetService.find(datasetId));
+    }
+
+    /**
+     * returns you to the dataset page.
+     *
+     * @return uri
+     */
+    private String returnToPreviousPage() {
+        return "/dataset.xhtml?persistentId=" + dataset.getGlobalId().asString() + "&version=DRAFT&faces-redirect=true";
+    }
+
+    /**
+     * Reorders files display order, it only reorders displayOrder for files between indexes.
+     * <p></p>
+     * ex. 012345 -> 3 was moved between 0 and 1 so
+     * <p></p>
+     * 3 -> 1;
+     * 1 -> 2;
+     * 2 -> 3;
+     *
+     * @param orderedFileMeta
+     * @param originalFiles
+     * @return
+     */
+    private List<FileMetadata> reorderFilesDisplayOrder(FileMetadataEvent orderedFileMeta,
+                                                        List<FileMetadata> originalFiles) {
+
+        int movedFrom = orderedFileMeta.getReorderEvent().getFromIndex();
+        int movedTo = orderedFileMeta.getReorderEvent().getToIndex();
+
+        if (movedTo > movedFrom) {
+
+            originalFiles.stream()
+                    .filter(fileMetadata ->
+                            fileMetadata.getDisplayOrder() > movedFrom
+                                    && fileMetadata.getDisplayOrder() <= movedTo
+                                    && !fileMetadata.equals(orderedFileMeta.getFileMetadata()))
+                    .forEach(fileMetadata -> fileMetadata.setDisplayOrder(fileMetadata.getDisplayOrder() - 1));
+        } else {
+
+            originalFiles.stream()
+                    .filter(fileMetadata -> fileMetadata.getDisplayOrder() >= movedTo
+                            && fileMetadata.getDisplayOrder() < movedFrom
+                            && !fileMetadata.equals(orderedFileMeta.getFileMetadata()))
+                    .forEach(fileMetadata -> fileMetadata.setDisplayOrder(fileMetadata.getDisplayOrder() + 1));
+        }
+        return originalFiles;
     }
 
     public Dataset getDataset() {
