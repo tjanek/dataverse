@@ -3,27 +3,32 @@ package edu.harvard.iq.dataverse.datafile.page;
 import edu.harvard.iq.dataverse.FileMetadata;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 class FileMetadataOrder {
 
-    private Map<FileMetadata, Integer> offsets = new ConcurrentHashMap<>();
+    private final List<FileMetadata> storage;
 
-    public void change(FileMetadata fileMetadata, int from, int to) {
-        int offset = to - from;
-        if (offset != 0) {
-            offsets.put(fileMetadata, offset);
-        }
+    FileMetadataOrder(List<FileMetadata> storage) {
+        this.storage = storage;
     }
 
-    public List<FileMetadata> changes() {
-        return offsets.keySet().stream()
-                .peek(fm -> {
-                    Integer offset = offsets.get(fm);
-                    fm.setDisplayOrder(fm.getDisplayOrder() + offset);
-                })
-                .collect(Collectors.toList());
+    List<FileMetadata> changes() {
+        List<FileMetadata> changes = newArrayList();
+
+        for (int i = 0; i < storage.size(); i++) {
+            FileMetadata fileMetadata = storage.get(i);
+            if (fileMetadata.getDisplayOrder() != i) {
+                fileMetadata.setDisplayOrder(i);
+                changes.add(fileMetadata);
+            }
+        }
+
+        return changes;
+    }
+
+    public List<FileMetadata> getStorage() {
+        return storage;
     }
 }
