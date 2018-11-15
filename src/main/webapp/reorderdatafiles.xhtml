@@ -30,31 +30,12 @@
                              selection="#{ReorderDataFilesPage.fileMetadatas}" var="fileMetadata" widgetVar="filesTable"
                              draggableRows="true"
                              emptyMessage="#{bundle['file.notFound.tip']}">
-                    <p:ajax event="rowReorder" listener="#{ReorderDataFilesPage.onRowReorder}"/>
-                    <f:facet name="header">
-                        <div class="row" style="margin-bottom:6px;">
-                            <div jsf:id="filesHeaderCount" class="col-xs-3 text-left">
-                                <!-- Files Count -->
-                                <h:outputFormat
-                                        value="There are {0} files"
-                                        styleClass="highlightBold"
-                                        rendered="#{ReorderDataFilesPage.fileMetadatas.size() gt 0}">
-                                    <f:param value="#{ReorderDataFilesPage.fileMetadatas.size()}"/>
-                                </h:outputFormat>
-                            </div>
-                        </div>
-
-                        <div class="row" jsf:rendered="#{ReorderDataFilesPage.fileMetadatas.size() gt 0}">
-
-                        </div>
-                    </f:facet>
 
                     <p:column class="col-file-thumb" style="width:64px !important;">
                     </p:column>
                     <p:column class="col-file-metadata">
 
-                        <ui:fragment rendered="#{!empty fileMetadata.dataFile.globalIdString}">mySet
-                            <!-- rendered="# {!(fileMetadata.datasetVersion.released or fileMetadata.datasetVersion.deaccessioned)}" -->
+                        <ui:fragment rendered="#{!empty fileMetadata.dataFile.globalIdString}">
                             <a href="#{widgetWrapper.wrapURL('/file.xhtml?persistentId='.concat(fileMetadata.dataFile.globalIdString).concat('&amp;version=').concat(fileMetadata.datasetVersion.friendlyVersionNumber))}">
                                 #{fileMetadata.label}
                             </a>
@@ -67,7 +48,6 @@
 
                         <!-- TYPE + SIZE + DATE -->
                         <div class="text-muted small">
-                            <!-- id:#{fileMetadata.dataFile.id} -->
                             <h:outputText id="fileTypeOutputRegular" value="#{fileMetadata.dataFile.friendlyType}"
                                           rendered="#{!(fileMetadata.dataFile.tabularData)}"/>
                             <h:outputText id="fileTypeOutputTabular" value="#{bundle['file.type.tabularData']}"
@@ -90,8 +70,9 @@
                         </div>
 
                         <div class="fileDescription small" jsf:rendered="#{!(empty fileMetadata.description)}">
-                            <h:button id="detailstoggle" onclick="return hideOrShowDetails(this.id)"
-                                      style="width:60px; height: 20px;"/>
+                            <h:commandLink id="detailstoggle" value="#{bundle['file.metaData.showDetails']}"
+                                           onclick="return hideOrShowDetails(this.id)"
+                                           style="width:60px; height: 20px;"/>
                             <h:outputText id="file-checksum" style="display: none; padding-bottom: 3px"
                                           value="#{fileMetadata.dataFile.checksumType}: #{fileMetadata.dataFile.checksumValue}"
                                           rendered="#{!(empty fileMetadata.dataFile.checksumValue)}"/>
@@ -113,18 +94,6 @@
                             </ui:fragment>
                         </div>
                     </p:column>
-                    <p:column class="col-file-action text-right #{settingsWrapper.rsyncOnly ? 'col-file-access' : ''}">
-
-                        <div id="txtInprogess" class="bg-info text-info text-center margin-bottom-half"
-                             jsf:rendered="#{fileMetadata.dataFile.ingestInProgress}">
-                            <!-- Ingest in progress... -->
-                            #{bundle['file.ingestInProgress']}
-                        </div>
-
-
-                        <div class="col-xs-12 text-left small" jsf:rendered="#{fileMetadata.dataFile.filePackage}">
-                        </div>
-                    </p:column>
                 </p:dataTable>
                 <p:fragment id="editDataFilesButtons">
                     <div class="button-block">
@@ -132,54 +101,26 @@
                             <div>
                                 <p:commandButton tabindex="1000" id="save" value="#{bundle.saveChanges}"
                                                  action="#{ReorderDataFilesPage.saveFileOrder}"
-                                                 onclick="checkNewlyRestricted();PF('blockFileForm').show();"/>
+                                                 onclick="PF('blockFileForm').show();"/>
                                 <p:commandButton tabindex="1000" id="cancel" value="#{bundle.cancel}"
                                                  action="#{ReorderDataFilesPage.returnToPreviousPage}" process="@this"
                                                  update="@form"
                                                  oncomplete="javascript:post_cancel_edit_files_or_metadata()">
                                 </p:commandButton>
                             </div>
-                            <div jsf:rendered="#{empty ReorderDataFilesPage.fileMetadatas}">
-                                <p:commandButton tabindex="1000" id="doneFilesButton" value="#{bundle.done}"
-                                                 action="#{ReorderDataFilesPage.returnToPreviousPage}" process="@this"
-                                                 update="@form"
-                                                 oncomplete="javascript:post_cancel_edit_files_or_metadata()">
-                                </p:commandButton>
-
-                            </div>
                         </p:outputPanel>
                     </div>
                 </p:fragment>
-                <!-- Request Access Sign Up/Log In Button -->
-                <p:dialog header="#{bundle['file.requestAccess']}" widgetVar="accessSignUpLogIn_popup" modal="true">
-                    <p class="help-block">
-                        <span class="glyphicon glyphicon-warning-sign text-danger"/>&#160;
-                        <h:outputFormat styleClass="text-danger"
-                                        value="#{dataverseHeaderFragment.signupAllowed ? bundle['file.requestAccess.dialog.msg.signup'] : bundle['file.requestAccess.dialog.msg']}"
-                                        escape="false">
-                            <f:param value="#{navigationWrapper.redirectPage}"/>
-                            <f:param value="#{dataverseHeaderFragment.getSignupUrl(navigationWrapper.redirectPage)}"/>
-                            <f:param value="#{widgetWrapper.widgetView ? '_blank' : '_self'}"/>
-                        </h:outputFormat>
-                    </p>
-                    <div class="button-block">
-                        <p:commandButton value="#{bundle.close}" onclick="PF('accessSignUpLogIn_popup').hide();
-                                    PF('blockDatasetForm').hide();"/>
-                    </div>
-                </p:dialog>
-                <!-- END: Request Access Sign Up/Log In Button -->
             </h:form>
             <script type="text/javascript">
                 function hideOrShowDetails(id) {
                     let textPosition = id.match("\\d")[0];
 
-                    var hiddenElements = new Set();
-                    hiddenElements.add("file-checksum");
-                    hiddenElements.add("fileDescNonEmpty");
+                    let hiddenElements = ['file-checksum', 'fileDescNonEmpty'];
 
                     for (let item of hiddenElements) {
 
-                        var obj = document.getElementById("form:filesTable:" + textPosition + ":" + item);
+                        let obj = document.getElementById("form:filesTable:" + textPosition + ":" + item);
                         if (obj.style.display === "none") {
                             obj.style.display = "block";
                         } else {
