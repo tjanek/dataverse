@@ -231,75 +231,6 @@ public class DatasetVersionTest {
     }
 
     @Test
-    public void shouldDecreaseDisplayOrderOfOtherFileMetadatasWhenRemoveSingleFile() {
-        // given
-        DatasetVersion version = withSortedFiles();
-        FileMetadata toRemove = version.getFileMetadatas().get(1);
-
-        // when
-        version.removeFileMetadata(toRemove);
-
-        // then
-        verifyDisplayOrder(version.getFileMetadatas(), 0, "file1.png", 1);
-        verifyDisplayOrder(version.getFileMetadatas(), 1, "file3.png", 2);
-        verifyDisplayOrder(version.getFileMetadatas(), 2, "file4.png", 3);
-
-        // and
-        versionHasNotFileMetadata(version.getFileMetadatas(), toRemove);
-    }
-
-    @Test
-    public void shouldDecreaseDisplayOrderOfOtherFileMetadatasWhenRemoveManyFilesFromMiddle() {
-        // given
-        DatasetVersion version = withSortedFiles();
-
-        // when
-        version.removeFileMetadata(version.getFileMetadatas().get(1));
-        version.removeFileMetadata(version.getFileMetadatas().get(1));
-
-        // then
-        verifyDisplayOrder(version.getFileMetadatas(), 0, "file1.png", 1);
-        verifyDisplayOrder(version.getFileMetadatas(), 1, "file4.png", 2);
-
-        // and
-        assertEquals(2, version.getFileMetadatas().size());
-    }
-
-    @Test
-    public void shouldDecreaseDisplayOrderOfOtherFileMetadatasWhenRemoveManyFilesFromBeginning() {
-        // given
-        DatasetVersion version = withSortedFiles();
-
-        // when
-        version.removeFileMetadata(version.getFileMetadatas().get(0));
-        version.removeFileMetadata(version.getFileMetadatas().get(0));
-
-        // then
-        verifyDisplayOrder(version.getFileMetadatas(), 0, "file3.png", 1);
-        verifyDisplayOrder(version.getFileMetadatas(), 1, "file4.png", 2);
-
-        // and
-        assertEquals(2, version.getFileMetadatas().size());
-    }
-
-    @Test
-    public void shouldNotDecreaseDisplayOrderOfAnyOtherFileMetadatasWhenRemoveLast() {
-        // given
-        DatasetVersion version = withSortedFiles();
-
-        // when
-        version.removeFileMetadata(version.getFileMetadatas().get(3));
-
-        // then
-        verifyDisplayOrder(version.getFileMetadatas(), 0, "file1.png", 1);
-        verifyDisplayOrder(version.getFileMetadatas(), 1, "file2.png", 2);
-        verifyDisplayOrder(version.getFileMetadatas(), 2, "file3.png", 3);
-
-        // and
-        assertEquals(3, version.getFileMetadatas().size());
-    }
-
-    @Test
     public void shouldAddNewFileMetadataWithProperDisplayOrder() {
         // given
         DatasetVersion version = withFilesAndCustomDisplayOrder();
@@ -313,12 +244,6 @@ public class DatasetVersionTest {
         verifyDisplayOrder(version.getFileMetadatas(), 1, "file2.png", 6);
         verifyDisplayOrder(version.getFileMetadatas(), 2, "file3.png", 8);
         verifyDisplayOrder(version.getFileMetadatas(), 3, "file4.png", 9);
-    }
-
-    private void versionHasNotFileMetadata(List<FileMetadata> metadatas, FileMetadata toRemove) {
-        assertFalse(metadatas.stream().anyMatch(fm ->
-                fm.getDisplayOrder() == toRemove.getDisplayOrder() &&
-                fm.getLabel().equals(toRemove.getLabel())));
     }
 
     private void verifySortOrder(List<FileMetadata> metadatas, String label, int expectedOrderIndex) {
@@ -340,19 +265,6 @@ public class DatasetVersionTest {
                 makeFileMetadata(40L,"file4.png", 0),
                 makeFileMetadata(50L,"file5.png", 2),
                 makeFileMetadata(60L,"file6.png", 4)
-        ));
-
-        return datasetVersion;
-    }
-
-    private DatasetVersion withSortedFiles() {
-        DatasetVersion datasetVersion = new DatasetVersion();
-
-        datasetVersion.setFileMetadatas(newArrayList(
-                makeFileMetadata(10L,"file1.png", 1),
-                makeFileMetadata(20L,"file2.png", 2),
-                makeFileMetadata(30L,"file3.png", 3),
-                makeFileMetadata(40L,"file4.png", 4)
         ));
 
         return datasetVersion;

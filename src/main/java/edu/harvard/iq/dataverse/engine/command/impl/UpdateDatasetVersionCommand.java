@@ -117,7 +117,7 @@ public class UpdateDatasetVersionCommand extends AbstractDatasetCommand<Dataset>
                 // if file is draft (ie. new to this version, delete; otherwise just remove filemetadata object)
                 ctxt.engine().submit(new DeleteDataFileCommand(fmd.getDataFile(), getRequest()));
                 tempDataset.getFiles().remove(fmd.getDataFile());
-                tempDataset.getEditVersion().removeFileMetadata(fmd);
+                tempDataset.getEditVersion().getFileMetadatas().remove(fmd);
                 // added this check to handle issue where you could not deleter a file that shared a category with a new file
                 // the relation ship does not seem to cascade, yet somehow it was trying to merge the filemetadata
                 // todo: clean this up some when we clean the create / update dataset methods
@@ -128,8 +128,8 @@ public class UpdateDatasetVersionCommand extends AbstractDatasetCommand<Dataset>
                 FileMetadata mergedFmd = ctxt.em().merge(fmd);
                 ctxt.em().remove(mergedFmd);
                 fmd.getDataFile().getFileMetadatas().remove(fmd);
-                tempDataset.getEditVersion().removeFileMetadata(fmd);
-            }      
+                tempDataset.getEditVersion().getFileMetadatas().remove(fmd);
+            }
         }        
         
         if (recalculateUNF) {

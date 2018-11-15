@@ -1815,21 +1815,4 @@ public class DatasetVersion implements Serializable {
         return ++maxDisplayOrder;
     }
 
-    public void removeFileMetadata(FileMetadata fileMetadata) {
-        getFileMetadatas().remove(fileMetadata);
-        for (FileMetadata metadata : findFilesToReorderAfter(fileMetadata)) {
-            metadata.decreaseDisplayOrder();
-        }
-    }
-
-    private List<FileMetadata> findFilesToReorderAfter(FileMetadata fileMetadata) {
-        List<FileMetadata> result = new ArrayList<>();
-        for (FileMetadata metadata : getFileMetadatas()) {
-            if (metadata.getDisplayOrder() > fileMetadata.getDisplayOrder()) {
-                result.add(metadata);
-            }
-        }
-        return result;
-    }
-
 }
