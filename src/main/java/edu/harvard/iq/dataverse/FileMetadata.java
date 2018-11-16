@@ -105,6 +105,7 @@ public class FileMetadata implements Serializable {
         fmd.setDescription( getDescription() );
         fmd.setLabel( getLabel() );
         fmd.setRestricted( isRestricted() );
+        fmd.setDisplayOrder( getDisplayOrder() );
 
         return fmd;
     }

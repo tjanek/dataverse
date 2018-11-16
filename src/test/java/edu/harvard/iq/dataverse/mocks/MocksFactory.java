@@ -241,6 +241,7 @@ public class MocksFactory {
 
         fileMetadata.setLabel(label);
         fileMetadata.setDisplayOrder(displayOrder);
+        fileMetadata.setCategories(new ArrayList<>());
 
         return fileMetadata;
     }

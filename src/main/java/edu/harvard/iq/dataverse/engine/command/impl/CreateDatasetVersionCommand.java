@@ -10,6 +10,7 @@ import edu.harvard.iq.dataverse.engine.command.DataverseRequest;
 import edu.harvard.iq.dataverse.engine.command.RequiredPermissions;
 import edu.harvard.iq.dataverse.engine.command.exception.CommandException;
 import edu.harvard.iq.dataverse.engine.command.exception.IllegalCommandException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -44,15 +45,14 @@ public class CreateDatasetVersionCommand extends AbstractDatasetCommand<DatasetV
         }
         
         prepareDatasetAndVersion();
-        
-        List<FileMetadata> newVersionMetadatum = new ArrayList<>(latest.getFileMetadatas().size());
+
+        newVersion.setFileMetadatas(new ArrayList<>(latest.getFileMetadatas().size()));
         for ( FileMetadata fmd : latest.getFileMetadatas() ) {
             FileMetadata fmdCopy = fmd.createCopy();
             fmdCopy.setDatasetVersion(newVersion);
-            newVersionMetadatum.add( fmdCopy );
+            newVersion.addFileMetadata( fmdCopy );
         }
-        newVersion.setFileMetadatas(newVersionMetadatum);
-        
+
         // TODO make async
         // ctxt.index().indexDataset(dataset);
         return ctxt.datasets().storeVersion(newVersion);

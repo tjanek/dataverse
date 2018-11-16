@@ -54,6 +54,18 @@ public class FileMetadataOrderTest {
         verifyChangesSize(changes, 2);
     }
 
+    @Test
+    public void shouldCopyDisplayOrder() {
+        // given
+        FileMetadata fileMetadata = makeFileMetadata("file1.png", 7);
+
+        // when
+        FileMetadata fileMetadataCopy = fileMetadata.createCopy();
+
+        // then
+        assertEquals(7, fileMetadataCopy.getDisplayOrder());
+    }
+
     private FileMetadata makeFileMetadata(String label, int displayOrder) {
         return MocksFactory.makeFileMetadata(id.incrementAndGet(), label, displayOrder);
     }
