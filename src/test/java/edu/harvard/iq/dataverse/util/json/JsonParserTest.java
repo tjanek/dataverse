@@ -573,8 +573,8 @@ public class JsonParserTest {
         datasetVersion = new JsonParser().parseDatasetVersion(versionJson, datasetVersion);
 
         // then
-        verifyDisplayOrderAtIndex(datasetVersion, 1, 0);
-        verifyDisplayOrderAtIndex(datasetVersion, 2, 1);
+        verifyDisplayOrderAtIndex(datasetVersion, 0, 0);
+        verifyDisplayOrderAtIndex(datasetVersion, 1, 1);
     }
 
     JsonObject json( String s ) {

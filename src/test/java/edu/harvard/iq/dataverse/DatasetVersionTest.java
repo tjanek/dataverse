@@ -246,6 +246,19 @@ public class DatasetVersionTest {
         verifyDisplayOrder(version.getFileMetadatas(), 3, "file4.png", 9);
     }
 
+    @Test
+    public void shouldAddNewFileMetadataOnEmptyMetadatasWithZeroIndex() {
+        // given
+        DatasetVersion version = new DatasetVersion();
+        FileMetadata toAdd = makeFileMetadata(40L, "file1.png", -5); // fake -5 displayOrder
+
+        // when
+        version.addFileMetadata(toAdd);
+
+        // then
+        verifyDisplayOrder(version.getFileMetadatas(), 0, "file1.png", 0);
+    }
+
     private void verifySortOrder(List<FileMetadata> metadatas, String label, int expectedOrderIndex) {
         assertEquals(label, metadatas.get(expectedOrderIndex).getLabel());
     }

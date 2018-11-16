@@ -1806,7 +1806,7 @@ public class DatasetVersion implements Serializable {
     }
 
     private int fileMetadataNextOrder() {
-        int maxDisplayOrder = 0;
+        int maxDisplayOrder = -1;
         for (FileMetadata metadata : getFileMetadatas()) {
             if (metadata.getDisplayOrder() > maxDisplayOrder) {
                 maxDisplayOrder = metadata.getDisplayOrder();
