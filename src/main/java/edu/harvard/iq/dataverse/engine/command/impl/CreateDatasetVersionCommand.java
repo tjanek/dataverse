@@ -50,7 +50,7 @@ public class CreateDatasetVersionCommand extends AbstractDatasetCommand<DatasetV
         for ( FileMetadata fmd : latest.getFileMetadatas() ) {
             FileMetadata fmdCopy = fmd.createCopy();
             fmdCopy.setDatasetVersion(newVersion);
-            newVersion.addFileMetadata( fmdCopy );
+            newVersion.getFileMetadatas().add( fmdCopy );
         }
 
         // TODO make async
