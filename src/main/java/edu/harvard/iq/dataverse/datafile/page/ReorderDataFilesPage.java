@@ -88,7 +88,7 @@ public class ReorderDataFilesPage implements java.io.Serializable {
      * @return uri
      */
     public String returnToPreviousPage() {
-        return "/dataset.xhtml?persistentId=" + dataset.getGlobalId().asString() + "&version=DRAFT&faces-redirect=true";
+        return "/dataset.xhtml?persistentId=" + dataset.getGlobalId().asString() + "&faces-redirect=true";
     }
 
     public Dataset getDataset() {
