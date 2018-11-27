@@ -242,7 +242,7 @@ public class DatasetVersionTest {
         // then
         verifyDisplayOrder(version.getFileMetadatas(), 0, "file1.png", 1);
         verifyDisplayOrder(version.getFileMetadatas(), 1, "file2.png", 6);
-        verifyDisplayOrder(version.getFileMetadatas(), 2, "file3.png", 18)
+        verifyDisplayOrder(version.getFileMetadatas(), 2, "file3.png", 8);
         verifyDisplayOrder(version.getFileMetadatas(), 3, "file4.png", 9);
     }
 
