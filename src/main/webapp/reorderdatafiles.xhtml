@@ -31,7 +31,7 @@
                              draggableRows="true"
                              emptyMessage="#{bundle['file.notFound.tip']}">
 
-                    <p:column class="col-file-metadata" headerText="File" style="padding-left: 10px">
+                    <p:column class="col-file-metadata" headerText="Files order" style="padding-left: 10px">
 
                         <ui:fragment rendered="#{!empty fileMetadata.dataFile.globalIdString}">
                             <a href="#{widgetWrapper.wrapURL('/file.xhtml?persistentId='.concat(fileMetadata.dataFile.globalIdString).concat('&amp;version=').concat(fileMetadata.datasetVersion.friendlyVersionNumber))}">
