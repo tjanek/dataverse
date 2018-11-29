@@ -1,6 +1,5 @@
 package edu.harvard.iq.dataverse.datafile.page;
 
-import com.google.common.collect.Lists;
 import edu.harvard.iq.dataverse.FileMetadata;
 import edu.harvard.iq.dataverse.mocks.MocksFactory;
 import org.junit.Before;
@@ -16,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FileMetadataOrderTest {
 
     private AtomicLong id;
-    private FileMetadataOrder order;
+    private List<FileMetadata> order;
 
     @Before
     public void setup() {
@@ -26,10 +25,10 @@ public class FileMetadataOrderTest {
     @Test
     public void shouldReturnEmptyChanges() {
         // given
-        order = new FileMetadataOrder(newArrayList());
+        order = newArrayList();
 
         // when
-        List<FileMetadata> changes = order.changes();
+        List<FileMetadata> changes = FileMetadataOrder.reorderDisplayOrder(order);
 
         // then
         verifyNoChanges(changes);
@@ -38,13 +37,13 @@ public class FileMetadataOrderTest {
     @Test
     public void shouldChangeDisplayOrdersByIndex() {
         // given
-        order = new FileMetadataOrder(newArrayList(
+        order = newArrayList(
                 makeFileMetadata("file1.png", 1),
                 makeFileMetadata("file2.png", 1),
-                makeFileMetadata("file3.png", 5) ));
+                makeFileMetadata("file3.png", 5));
 
         // when
-        List<FileMetadata> changes = order.changes();
+        List<FileMetadata> changes = FileMetadataOrder.reorderDisplayOrder(order);
 
         // then
         verifyDisplayOrder(changes, "file1.png", 0);

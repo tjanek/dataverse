@@ -8,17 +8,17 @@ import static com.google.common.collect.Lists.newArrayList;
 
 class FileMetadataOrder {
 
-    private final List<FileMetadata> storage;
-
-    FileMetadataOrder(List<FileMetadata> storage) {
-        this.storage = storage;
-    }
-
-    List<FileMetadata> changes() {
+    /**
+     * Sets display order same as index in the list.
+     *
+     * @param filesToReorder
+     * @return filemetadas with changed display order.
+     */
+    static List<FileMetadata> reorderDisplayOrder(List<FileMetadata> filesToReorder) {
         List<FileMetadata> changes = newArrayList();
 
-        for (int i = 0; i < storage.size(); i++) {
-            FileMetadata fileMetadata = storage.get(i);
+        for (int i = 0; i < filesToReorder.size(); i++) {
+            FileMetadata fileMetadata = filesToReorder.get(i);
             if (fileMetadata.getDisplayOrder() != i) {
                 fileMetadata.setDisplayOrder(i);
                 changes.add(fileMetadata);
@@ -26,9 +26,5 @@ class FileMetadataOrder {
         }
 
         return changes;
-    }
-
-    public List<FileMetadata> getStorage() {
-        return storage;
     }
 }

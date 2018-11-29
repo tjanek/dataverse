@@ -20,17 +20,15 @@
                         action="#{dataverseHeaderFragment.initBreadcrumbs(ReorderDataFilesPage.dataset,'Reorder files')}"/>
             </f:metadata>
             <h:form id="form">
-                <p:growl id="msgs" showDetail="true"/>
                 <!-- Files Table -->
                 <p:dataTable id="filesTable"
                              style="margin-right:1px;"
                              value="#{ReorderDataFilesPage.fileMetadatas}"
                              rowKey="#{fileMetadata.dataFile.storageIdentifier}"
                              sortOrder="ascending"
-                             selection="#{ReorderDataFilesPage.fileMetadatas}" var="fileMetadata" widgetVar="filesTable"
+                             var="fileMetadata" widgetVar="filesTable"
                              draggableRows="true"
                              emptyMessage="#{bundle['file.notFound.tip']}">
-
                     <p:column class="col-file-metadata" headerText="File" style="padding-left: 10px">
 
                         <ui:fragment rendered="#{!empty fileMetadata.dataFile.globalIdString}">

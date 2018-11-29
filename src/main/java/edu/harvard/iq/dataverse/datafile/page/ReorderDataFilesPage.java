@@ -30,7 +30,7 @@ public class ReorderDataFilesPage implements java.io.Serializable {
 
     private Dataset dataset = new Dataset();
     private List<FileMetadata> fileMetadatas;
-    private FileMetadataOrder fileMetadatasCopy;
+    private List<FileMetadata> fileMetadatasCopy;
 
     /**
      * Initializes all properties requested by frontend.
@@ -49,7 +49,7 @@ public class ReorderDataFilesPage implements java.io.Serializable {
         fileMetadatas = fetchedDataset.get().getLatestVersion().getFileMetadatasSorted();
 
         // for some reason the original fileMetadatas is causing null if used anywhere else. For
-        fileMetadatasCopy = new FileMetadataOrder(fileMetadatas);
+        fileMetadatasCopy = fileMetadatas;
 
         if (!permissionService.on(dataset).has(Permission.EditDataset)) {
             return permissionsWrapper.notAuthorized();
@@ -66,7 +66,7 @@ public class ReorderDataFilesPage implements java.io.Serializable {
      */
     public String saveFileOrder() {
 
-        datasetVersionService.saveFileMetadata(fileMetadatasCopy.changes());
+        datasetVersionService.saveFileMetadata(FileMetadataOrder.reorderDisplayOrder(fileMetadatasCopy));
 
         return returnToPreviousPage();
     }
