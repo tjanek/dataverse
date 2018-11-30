@@ -1,7 +1,7 @@
 package edu.harvard.iq.dataverse.datafile.page;
 
-import edu.harvard.iq.dataverse.Dataset;
 import edu.harvard.iq.dataverse.DatasetServiceBean;
+import edu.harvard.iq.dataverse.DatasetVersion;
 import edu.harvard.iq.dataverse.DatasetVersionServiceBean;
 import edu.harvard.iq.dataverse.FileMetadata;
 import edu.harvard.iq.dataverse.PermissionServiceBean;
@@ -28,7 +28,7 @@ public class ReorderDataFilesPage implements java.io.Serializable {
     @Inject
     private PermissionsWrapper permissionsWrapper;
 
-    private Dataset dataset = new Dataset();
+    private DatasetVersion datasetVersion = new DatasetVersion();
     private List<FileMetadata> fileMetadatas;
     private List<FileMetadata> fileMetadatasCopy;
 
@@ -40,18 +40,18 @@ public class ReorderDataFilesPage implements java.io.Serializable {
      */
     public String init() {
 
-        Optional<Dataset> fetchedDataset = fetchDataset(dataset.getId());
+        Optional<DatasetVersion> fetchedDatasetVersion = fetchDatasetVersion(datasetVersion.getId());
 
-        if (!fetchedDataset.isPresent() || fetchedDataset.get().isHarvested()) {
+        if (!fetchedDatasetVersion.isPresent() || fetchedDatasetVersion.get().getDataset().isHarvested()) {
             return permissionsWrapper.notFound();
         }
 
-        fileMetadatas = fetchedDataset.get().getLatestVersion().getFileMetadatasSorted();
+        fileMetadatas = fetchedDatasetVersion.get().getFileMetadatasSorted();
 
         // for some reason the original fileMetadatas is causing null if used anywhere else. For
         fileMetadatasCopy = fileMetadatas;
 
-        if (!permissionService.on(dataset).has(Permission.EditDataset)) {
+        if (!permissionService.on(datasetVersion.getDataset()).has(Permission.EditDataset)) {
             return permissionsWrapper.notAuthorized();
         }
 
@@ -77,9 +77,9 @@ public class ReorderDataFilesPage implements java.io.Serializable {
      * @param id
      * @return optional
      */
-    private Optional<Dataset> fetchDataset(Long id) {
+    private Optional<DatasetVersion> fetchDatasetVersion(Long id) {
         return Optional.ofNullable(id)
-                .map(datasetId -> this.dataset = datasetService.find(datasetId));
+                .map(datasetId -> this.datasetVersion = datasetVersionService.find(datasetId));
     }
 
     /**
@@ -88,19 +88,26 @@ public class ReorderDataFilesPage implements java.io.Serializable {
      * @return uri
      */
     public String returnToPreviousPage() {
-        return "/dataset.xhtml?persistentId=" + dataset.getGlobalId().asString() + "&faces-redirect=true";
+        if (datasetVersion.isDraft()) {
+            return "/dataset.xhtml?persistentId=" +
+                    datasetVersion.getDataset().getGlobalId().asString() + "&version=DRAFT&faces-redirect=true";
+        }
+        return "/dataset.xhtml?persistentId=" +
+                datasetVersion.getDataset().getGlobalId().asString()
+                + "&faces-redirect=true&version="
+                + datasetVersion.getVersionNumber() + "." + datasetVersion.getMinorVersionNumber();
     }
 
-    public Dataset getDataset() {
-        return dataset;
+    public DatasetVersion getDatasetVersion() {
+        return datasetVersion;
     }
 
     public List<FileMetadata> getFileMetadatas() {
         return fileMetadatas;
     }
 
-    public void setDataset(Dataset dataset) {
-        this.dataset = dataset;
+    public void setDatasetVersion(DatasetVersion datasetVersion) {
+        this.datasetVersion = datasetVersion;
     }
 
     public void setFileMetadatas(List<FileMetadata> fileMetadatas) {

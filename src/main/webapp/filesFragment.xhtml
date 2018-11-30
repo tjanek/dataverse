@@ -1,15 +1,12 @@
 <ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:p="http://primefaces.org/ui"
-    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://java.sun.com/jsf/passthrough"
-    xmlns:cc="http://java.sun.com/jsf/composite"
-    xmlns:o="http://omnifaces.org/ui"
-    xmlns:iqbs="http://xmlns.jcp.org/jsf/composite/iqbs">
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:jsf="http://xmlns.jcp.org/jsf"
+        xmlns:o="http://omnifaces.org/ui"
+>
     <o:importFunctions type="java.lang.Math" />
     <p:remoteCommand name="refreshPaginator" action="#{DatasetPage.refreshPaginator()}" process="@this" update="@form" />
     <!-- Files Table -->
@@ -118,7 +115,7 @@
                         </h:commandLink>
 
                         <!-- REORDER FILES BUTTON -->
-                        <h:outputLink value="/reorderdatafiles.xhtml?datasetId=#{DatasetPage.dataset.id}"
+                        <h:outputLink value="/reorderdatafiles.xhtml?datasetVersionId=#{DatasetPage.workingVersion.id}"
                                       type="button" styleClass="btn btn-default btn-access #{DatasetPage.lockedFromEdits ? 'ui-state-disabled' : ''}"
                                       disabled="#{DatasetPage.lockedFromEdits}" rendered="#{DatasetPage.sessionUserAuthenticated
                                                                                     and DatasetPage.canUpdateDataset()

@@ -14,17 +14,16 @@
         <ui:param name="fileMetadatas" value="#{ReorderDataFilesPage.fileMetadatas}"/>
         <ui:define name="body">
             <f:metadata>
-                <f:viewParam name="datasetId" value="#{ReorderDataFilesPage.dataset.id}"/>
+                <f:viewParam name="datasetVersionId" value="#{ReorderDataFilesPage.datasetVersion.id}"/>
                 <f:viewAction action="#{ReorderDataFilesPage.init}" rendered="true"/>
                 <f:viewAction
-                        action="#{dataverseHeaderFragment.initBreadcrumbs(ReorderDataFilesPage.dataset,'Reorder files')}"/>
+                        action="#{dataverseHeaderFragment.initBreadcrumbs(ReorderDataFilesPage.datasetVersion.dataset,'Reorder files')}"/>
             </f:metadata>
             <h:form id="form">
                 <!-- Files Table -->
                 <p:dataTable id="filesTable"
                              style="margin-right:1px;"
                              value="#{ReorderDataFilesPage.fileMetadatas}"
-                             rowKey="#{fileMetadata.dataFile.storageIdentifier}"
                              sortOrder="ascending"
                              var="fileMetadata" widgetVar="filesTable"
                              draggableRows="true"
